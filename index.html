@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bala</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(circle at top left, #6a11cb, #2575fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+    }
+
+    .name {
+      font-size: 10vw;
+      color: white;
+      position: relative;
+      animation: float 3s ease-in-out infinite;
+      letter-spacing: 0.2em;
+      text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="name">Bala</div>
+</body>
+</html>
