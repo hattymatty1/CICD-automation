@@ -25,7 +25,8 @@ pipeline {
               sudo systemctl start apache2
             EOF
 
-            scp -o StrictHostKeyChecking=no index.html $EC2_USER@$EC2_B_IP:/tmp/index.html
+            scp -o StrictHostKeyChecking=no \$WORKSPACE/index.html $EC2_USER@$EC2_B_IP:/tmp/index.html
+
 
             ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_B_IP << 'EOF'
               sudo mv /tmp/index.html /var/www/html/index.html
