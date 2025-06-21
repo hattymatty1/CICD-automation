@@ -3,39 +3,43 @@ pipeline {
 
   environment {
     EC2_USER = "ubuntu"
-    EC2_B_IP = "54.83.102.76" // replace with actual EC2-B IP
-    CRED_ID = "target"
+    EC2_B_IP = "54.83.102.76"
+    CRED_ID = "target" // Jenkins SSH credential ID
+    REPO_URL = "https://github.com/hattymatty1/CICD-automation.git"
+    APP_DIR = "/home/ubuntu/cicd-app"
   }
 
   stages {
-    stage('Checkout Code') {
-      steps {
-        git branch: 'main', url: 'https://github.com/hattymatty1/CICD-automation.git'
-      }
-    }
-
-    stage('Install Apache and Deploy Page') {
+    stage('Deploy index.html from GitHub') {
       steps {
         sshagent (credentials: [CRED_ID]) {
           sh """
-            ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_B_IP << 'EOF'
+            ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_B_IP '
+              set -e
+
+              # Install Apache and Git
               sudo apt update
-              sudo apt install apache2 -y
-              sudo systemctl enable apache2
-              sudo systemctl start apache2
-            EOF
+              sudo apt install -y apache2 git
 
-            scp -o StrictHostKeyChecking=no \$WORKSPACE/index.html $EC2_USER@$EC2_B_IP:/tmp/index.html
+              # Clone or update the repo
+              if [ ! -d "$APP_DIR" ]; then
+                git clone $REPO_URL $APP_DIR
+              else
+                cd $APP_DIR && git pull
+              fi
 
-
-            ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_B_IP << 'EOF'
-              sudo mv /tmp/index.html /var/www/html/index.html
+              # Replace default Apache index.html with your custom one
+              sudo cp $APP_DIR/index.html /var/www/html/index.html
               sudo chown www-data:www-data /var/www/html/index.html
-            EOF
+
+              # Restart Apache to ensure changes are served
+              sudo systemctl restart apache2
+            '
           """
         }
       }
     }
   }
 }
+
 
